@@ -1,0 +1,36 @@
+# yamllint disable rule:line-length
+---
+name: confirm oci registry
+
+description: use registry credentials to perform login
+
+inputs:
+
+  registry:
+    description: oci compatible registry
+    required: false
+    default: docker.io
+
+  registry-username:
+    description: oci compatible registry
+    required: false
+    default: $DOCKER_LOGIN
+
+  registry-password:
+    description: oci compatible registry
+    required: false
+    default: $DOCKER_PASSWORD
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: login to image registry
+      shell: bash
+      env:
+        CONFIRM_REGISTRY: ${{ inputs.registry }}
+        CONFIRM_REGISTRY_LOGIN: ${{ inputs.registry-username }}
+        CONFIRM_REGISTRY_PASSWORD: ${{ inputs.registry-password }}
+      run: |
+        echo 'write to .docker/config.json is secure in ephemeral runtime environment'
+        echo "$CONFIRM_REGISTRY_PASSWORD" | docker login -u "$CONFIRM_REGISTRY_LOGIN" --password-stdin "$CONFIRM_REGISTRY"
