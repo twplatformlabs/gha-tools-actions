@@ -1,0 +1,55 @@
+# yamllint disable rule:line-length
+---
+name: buildx
+
+description: |
+  Uses buildx with a bake file for advanced builds.
+  Defaults to docker-bake.json, can override.
+
+inputs:
+
+  bake-file:
+    description: Name of docker bake json file. Default is docker-bake.json.
+    required: false
+    default: "docker-bake.json"
+
+  tag:
+    description: value for tag
+    required: false
+    default: "dev.${GITHUB_SHA:0:7}"
+
+  target:
+    description: bake file target to build. Default is runner.
+    required: false
+    default: "runner"
+
+  extra-build-args:
+    description: Extra flags to pass to docker build
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Buildx based on docker bake file configuration
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        BAKE_FILE: ${{ inputs.bake-file }}
+        TARGET: ${{ inputs.target }}
+        EXTRA_BUILD_ARGS: ${{ inputs.extra-build-args }}
+      run: |
+        str="$BAKE_FILE.$TARGET.build.out"
+        outfile=${str#*/}
+        docker -v
+        docker buildx create --name builder --driver docker-container --bootstrap --use
+        docker buildx bake --progress plain --metadata-file metadata.json \
+          ${EXTRA_BUILD_ARGS} \
+          --push -f $BAKE_FILE $TARGET 2>&1 | tee workspace/$outfile
+
+# - name: Upload artifact
+#     uses: actions/upload-artifact@v4
+#     with:
+#       name: my-build-artifact # The name for your artifact
+#       path: path/to/files/
