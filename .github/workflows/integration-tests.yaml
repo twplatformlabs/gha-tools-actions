@@ -33,7 +33,7 @@ jobs:
           version: 2.32.0
 
       - name: Load slack webhook
-        uses: 1password/load-secrets-action@v2.0.0
+        uses: 1password/load-secrets-action@v3.1.0
         with:
           export-env: true
         env:
