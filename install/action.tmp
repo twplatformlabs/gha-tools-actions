@@ -1,0 +1,105 @@
+# yamllint disable rule:line-length
+---
+name: install
+
+description: |
+  Install gha common packages.
+
+  Common packages, like actions, are packages not generally associated
+  with a particular pipeline tech stack. This are likely to be found on
+  any kind of pipeline and base image.
+
+  Supported packages:
+  - 1Password
+  - vault
+  - teller
+  - hadolint
+  - Docker Scout
+  - trivy
+
+inputs:
+
+  op-version:
+    description: 1password-cli version
+    required: false
+    default: ""
+
+  teller-version:
+    description: Install Teller version
+    required: false
+    default: "1.5.6"
+
+  vault-version:
+    description: Install Vault version
+    required: false
+    default: ""
+
+  snyk-version:
+    description: Install Hadolint version
+    required: false
+    default: ""
+
+  scout-version:
+    description: Install Hadolint version
+    required: false
+    default: ""
+
+  trivy-version:
+    description: Install Hadolint version
+    required: false
+    default: ""
+
+  grype-version:
+    description: Install Hadolint version
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Install 1Password CLI
+      if: ${{ inputs.op-version != '' }}
+      uses: 1password/install-cli-action@v2
+      with:
+        version: ${{ inputs.op-version }}
+
+    - name: Install Vault
+      if: ${{ inputs.vault-version != '' }}
+      uses: eLco/setup-vault@v1
+      with:
+        vault_version: ${{ inputs.vault-version }}
+
+      # shell: bash
+      # run: |
+      #   curl -SLO "https://releases.hashicorp.com/vault/${{ inputs.vault-version }}/vault_${{ inputs.vault-version }}_linux_amd64.zip" > "vault_${{ inputs.vault-version }}_linux_amd64.zip"
+      #   sudo unzip "vault_${{ inputs.vault-version }}_linux_amd64.zip" -d /usr/local/bin
+      #   sudo rm "vault_${{ inputs.vault-version }}_linux_amd64.zip"
+
+    - name: Install Teller
+      if: ${{ inputs.teller-version != '' }}
+      uses: spectralops/setup-teller@v2
+      with:
+        teller_version: ${{ inputs.teller-version }}
+
+      # shell: bash
+      # run: |
+      #   curl -L https://github.com/tellerops/teller/releases/download/v${{ inputs.teller-version }}/teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz --output teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
+      #   tar -xzf teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
+      #   sudo mv teller /usr/local/bin/teller
+      #   rm teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
+
+    - name: Install snyk
+      if: ${{ inputs.buildevents-version != '' }}
+      shell: bash
+      run: |
+
+    - name: Install scout
+      if: ${{ inputs.buildevents-version != '' }}
+      shell: bash
+      run: |
+
+    - name: Install trivy
+      if: ${{ inputs.buildevents-version != '' }}
+      shell: bash
+      run: |
