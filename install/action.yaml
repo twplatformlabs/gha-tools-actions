@@ -109,7 +109,7 @@ runs:
         curl -fL -O "${download_url}"
         tar -xzf "docker-scout_${download_version:1}_linux_amd64.tar.gz" docker-scout && rm "docker-scout_${download_version:1}_linux_amd64.tar.gz"
         mkdir -p "$HOME/.docker/cli-plugins" && mv docker-scout "$HOME/.docker/cli-plugins/docker-scout"
-        cat > "$HOME/.docker/cli-plugins" << 'EOF'
+        cat > "$HOME/.docker/cli-plugins.json" << 'EOF'
         {
           "cliPluginsExtraDirs": [
             "$HOME/.docker/cli-plugins"
