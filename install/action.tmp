@@ -13,9 +13,10 @@ description: |
   - 1Password
   - vault
   - teller
-  - hadolint
   - Docker Scout
+  - snyk
   - trivy
+  - grype
 
 inputs:
 
@@ -34,12 +35,12 @@ inputs:
     required: false
     default: ""
 
-  snyk-version:
+  scout-version:
     description: Install Hadolint version
     required: false
     default: ""
 
-  scout-version:
+  snyk-version:
     description: Install Hadolint version
     required: false
     default: ""
@@ -89,17 +90,39 @@ runs:
       #   sudo mv teller /usr/local/bin/teller
       #   rm teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
 
-    - name: Install snyk
-      if: ${{ inputs.buildevents-version != '' }}
-      shell: bash
-      run: |
-
     - name: Install scout
       if: ${{ inputs.buildevents-version != '' }}
       shell: bash
+      env:
+        SCOUT_VERSION: ${{ inputs.scout-version }}
       run: |
+        #!/bin/bash
+        set -euo pipefail
 
-    - name: Install trivy
-      if: ${{ inputs.buildevents-version != '' }}
-      shell: bash
-      run: |
+        if [ -z "$SCOUT_VERSION" ] || [ "$SCOUT_VERSION" = "latest" ]; then
+          download_version=$(curl -s "https://api.github.com/repos/docker/scout-cli/releases/latest" | jq -r .tag_name)
+        else
+          download_version="$SCOUT_VERSION"
+        fi
+
+        download_url="https://github.com/docker/scout-cli/releases/download/${download_version}/docker-scout_${download_version:1}_linux_amd64.tar.gz"
+        curl -fL -O "${download_url}"
+        tar -xzf "docker-scout_${download_version:1}_linux_amd64.tar.gz" docker-scout && rm "docker-scout_${download_version:1}_linux_amd64.tar.gz"
+        mkdir -p "$HOME/.docker/cli-plugins" && mv docker-scout "$HOME/.docker/cli-plugins/docker-scout"
+        cat > "$HOME/.docker/cli-plugins" << 'EOF'
+        {
+          "cliPluginsExtraDirs": [
+            "$HOME/.docker/cli-plugins"
+          ]
+        }
+        EOF
+
+    # - name: Install snyk
+    #   if: ${{ inputs.buildevents-version != '' }}
+    #   shell: bash
+    #   run: |
+
+    # - name: Install trivy
+    #   if: ${{ inputs.buildevents-version != '' }}
+    #   shell: bash
+    #   run: |
