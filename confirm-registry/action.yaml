@@ -2,7 +2,7 @@
 ---
 name: confirm oci registry
 
-description: use registry credentials to perform login
+description: use $DOCKER_LOGIN and $DOCKER_PASSWORD to perform docker login
 
 inputs:
 
@@ -10,14 +10,6 @@ inputs:
     description: oci compatible registry
     required: false
     default: docker.io
-
-  registry-username:
-    description: oci compatible registry
-    required: false
-
-  registry-password:
-    description: oci compatible registry
-    required: false
 
 runs:
   using: "composite"
@@ -27,8 +19,6 @@ runs:
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}
-        REGISTRY_LOGIN: ${{ inputs.registry-username }}
-        REGISTRY_PASSWORD: ${{ inputs.registry-password }}
       run: |
         echo 'write to .docker/config.json is secure in ephemeral runtime environment'
-        echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_LOGIN" --password-stdin "$REGISTRY"
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin "$REGISTRY"
