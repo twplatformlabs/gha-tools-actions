@@ -43,8 +43,6 @@ runs:
         [[ -z "$TAG" ]] && TAG="dev.${GITHUB_SHA::7}"
         echo "TAG=$TAG" >> "$GITHUB_ENV"
 
-        str="$BAKE_FILE.$TARGET.build.out"
-        outfile=${str#*/}
         echo "bake file=$BAKEFILE"
         echo "target=$TARGET"
         echo "tag=$TAG"
@@ -54,10 +52,10 @@ runs:
         docker buildx create --name builder --driver docker-container --bootstrap --use
         docker buildx bake --progress plain --metadata-file metadata.json \
           ${EXTRA_BUILD_ARGS} \
-          --push -f $BAKE_FILE $TARGET 2>&1 | tee $outfile
+          --push -f $BAKE_FILE $TARGET 2>&1 | tee build.log
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: build.log
-        path: $outfile
+        path: build.log
