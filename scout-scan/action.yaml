@@ -83,7 +83,7 @@ runs:
           fi
 
           # Run Docker Scout CVE scan and append to cve-scan.log
-          dockef scout version
+          docker scout version
           {
             echo "===== Target: ${target_name}  Image: ${image_ref} ====="
             docker scout cves "$image_ref" --details
