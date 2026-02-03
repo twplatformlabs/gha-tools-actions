@@ -21,6 +21,16 @@ inputs:
     required: false
     default: "runner"
 
+  bats-entry-point:
+    description: Bats entry point
+    required: false
+    default: "/bin/bash"
+
+  bats-test-path:
+    description: Path to bats test file
+    required: false
+    default: ""
+
 runs:
   using: "composite"
 
@@ -31,6 +41,8 @@ runs:
         TAG: ${{ inputs.tag }}
         BAKE_FILE: ${{ inputs.bake-file }}
         TARGET: ${{ inputs.target }}
+        BATS_ENTRY_POINT: ${{ inputs.bats-entry-point }}
+        BATS_TEST_PATH: ${{ inputs.bats-test-path }}
       run: |
         #!/bin/bash
         set -euo pipefail
