@@ -16,7 +16,7 @@ inputs:
   tag:
     description: value for tag
     required: false
-    default: "dev.${GITHUB_SHA:0:7}"
+    default: ""     # "dev.${GITHUB_SHA:0:7}"
 
   target:
     description: bake file target to build. Default is runner.
@@ -40,6 +40,9 @@ runs:
         TARGET: ${{ inputs.target }}
         EXTRA_BUILD_ARGS: ${{ inputs.extra-build-args }}
       run: |
+        TAG="${TAG:-dev.${GITHUB_SHA::7}}"
+        echo "TAG=$TAG" >> "$GITHUB_ENV"
+
         str="$BAKE_FILE.$TARGET.build.out"
         outfile=${str#*/}
         docker -v
