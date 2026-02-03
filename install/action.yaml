@@ -77,11 +77,11 @@ runs:
       #   sudo unzip "vault_${{ inputs.vault-version }}_linux_amd64.zip" -d /usr/local/bin
       #   sudo rm "vault_${{ inputs.vault-version }}_linux_amd64.zip"
 
-    - name: Install Teller
-      if: ${{ inputs.teller-version != '' }}
-      uses: spectralops/setup-teller@v2
-      with:
-        teller_version: ${{ inputs.teller-version }}
+    # - name: Install Teller
+    #   if: ${{ inputs.teller-version != '' }}
+    #   uses: spectralops/setup-teller@v2
+    #   with:
+    #     teller_version: ${{ inputs.teller-version }}
 
       # shell: bash
       # run: |
