@@ -54,10 +54,10 @@ runs:
         docker buildx create --name builder --driver docker-container --bootstrap --use
         docker buildx bake --progress plain --metadata-file metadata.json \
           ${EXTRA_BUILD_ARGS} \
-          --push -f $BAKE_FILE $TARGET 2>&1 | tee workspace/$outfile
+          --push -f $BAKE_FILE $TARGET 2>&1 | tee $outfile
 
-# - name: Upload artifact
-#     uses: actions/upload-artifact@v4
-#     with:
-#       name: my-build-artifact # The name for your artifact
-#       path: path/to/files/
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build.log
+        path: $outfile
