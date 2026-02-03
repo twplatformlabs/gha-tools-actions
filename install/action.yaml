@@ -91,7 +91,7 @@ runs:
       #   rm teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
 
     - name: Install scout
-      if: ${{ inputs.buildevents-version != '' }}
+      if: ${{ inputs.scout-version != '' }}
       shell: bash
       env:
         SCOUT_VERSION: ${{ inputs.scout-version }}
