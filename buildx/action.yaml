@@ -40,7 +40,7 @@ runs:
         TARGET: ${{ inputs.target }}
         EXTRA_BUILD_ARGS: ${{ inputs.extra-build-args }}
       run: |
-        TAG="${TAG:-dev.${GITHUB_SHA::7}}"
+        [[ -z "$TAG" ]] && TAG="dev.${GITHUB_SHA::7}"
         echo "TAG=$TAG" >> "$GITHUB_ENV"
 
         str="$BAKE_FILE.$TARGET.build.out"
@@ -49,7 +49,7 @@ runs:
         echo "target=$TARGET"
         echo "tag=$TAG"
         echo "results written to $outfile"
-        
+
         docker -v
         docker buildx create --name builder --driver docker-container --bootstrap --use
         docker buildx bake --progress plain --metadata-file metadata.json \
