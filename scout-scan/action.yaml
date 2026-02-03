@@ -1,0 +1,101 @@
+# yamllint disable rule:line-length
+---
+name: scout scan
+
+description: Uses Docker Scout with a bake file configuration for cve scan.
+
+inputs:
+
+  bake-file:
+    description: Name of docker bake json file. Default is docker-bake.json.
+    required: false
+    default: "docker-bake.json"
+
+  tag:
+    description: value for tag
+    required: false
+    default: ""
+
+  target:
+    description: bake file target to build. Default is runner.
+    required: false
+    default: "runner"
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Docker Scout cve scanbased on docker bake file configuration
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        BAKE_FILE: ${{ inputs.bake-file }}
+        TARGET: ${{ inputs.target }}
+      run: |
+        #!/bin/bash
+        set -euo pipefail
+
+        if [[ ! -f "$BAKE_FILE" ]]; then
+          echo "Bake file not found: $BAKE_FILE" >&2
+          exit 1
+        fi
+
+        [[ -z "$TAG" ]] && TAG="dev.${GITHUB_SHA::7}"
+        echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+        echo "Running Docker Scout CVE scan against images based on docker bake file targets."
+        echo "Using bake file: $BAKE_FILE"
+        echo "Using TAG=$TAG"
+        echo "Output file: cve-scan.log"
+
+        {
+          echo "=== Docker Scout CVE Scan Results ==="
+          echo "Bake file: $BAKE_FILE"
+          echo "TAG: $TAG"
+          echo
+        } > "cve-scan.log"
+
+        # Extract all targets and their tags, append scan results to OUTFILE
+        jq -r '
+          .target
+          | to_entries[]
+          | select(.value.tags != null)
+          | .key as $name
+          | .value.tags[]
+          | [$name, .]
+          | @tsv
+        ' "$BAKE_FILE" | 
+        while IFS=$'\t' read -r target_name raw_tag; do
+          image_ref="$raw_tag"
+
+          # Replace bake file var reference with actual VAR value.
+          # We define it twice to support both ${TAG} and $TAG
+          image_ref="${image_ref//\$\{TAG\}/$TAG}"
+          image_ref="${image_ref//\$TAG/$TAG}"
+
+          # pick up any other ENV should they exist in the defition (allows more customization)
+          image_ref="$(eval echo "$image_ref")"
+
+          echo "Scanning Target: ${target_name}  Image: ${image_ref}" | tee -a "$OUTFILE"
+          if ! docker buildx imagetools inspect "$image_ref" >/dev/null 2>&1; then
+              echo "❌ $image_ref not found in registry"
+              exit 1
+          fi
+
+          # Run Docker Scout CVE scan and append to OUTFILE
+          {
+            echo "===== Target: ${target_name}  Image: ${image_ref} ====="
+            docker scout cves "$image_ref" --details
+            docker scout recommendations "$image_ref"
+            echo
+            echo "view scout output in pipeline artifacts for details"
+            echo "--- End of ${target_name} scan ---"
+            echo
+          } >> "cve-scan.log"
+        done
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cve-scan.log
+        path: cve-scan.log
