@@ -45,6 +45,11 @@ runs:
 
         str="$BAKE_FILE.$TARGET.build.out"
         outfile=${str#*/}
+        echo "bake file=$BAKEFILE"
+        echo "target=$TARGET"
+        echo "tag=$TAG"
+        echo "results written to $outfile"
+        
         docker -v
         docker buildx create --name builder --driver docker-container --bootstrap --use
         docker buildx bake --progress plain --metadata-file metadata.json \
