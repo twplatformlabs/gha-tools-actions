@@ -99,7 +99,7 @@ runs:
         #!/bin/bash
         set -euo pipefail
 
-        if [ -z "$SCOUT_VERSION" ] || [ "$SCOUT_VERSION" = "latest" ]; then
+        if [[ "$SCOUT_VERSION" = "latest" ]]; then
           download_version=$(curl -s "https://api.github.com/repos/docker/scout-cli/releases/latest" | jq -r .tag_name)
         else
           download_version="$SCOUT_VERSION"
