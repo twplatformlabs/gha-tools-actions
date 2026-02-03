@@ -55,7 +55,7 @@ runs:
           echo
         } > "cve-scan.log"
 
-        # Extract all targets and their tags, append scan results to OUTFILE
+        # Extract all targets and their tags, append scan results to cve-scan.log
         jq -r '
           .target
           | to_entries[]
@@ -76,13 +76,13 @@ runs:
           # pick up any other ENV should they exist in the defition (allows more customization)
           image_ref="$(eval echo "$image_ref")"
 
-          echo "Scanning Target: ${target_name}  Image: ${image_ref}" | tee -a "$OUTFILE"
+          echo "Scanning Target: ${target_name}  Image: ${image_ref}" | tee -a "cve-scan.log"
           if ! docker buildx imagetools inspect "$image_ref" >/dev/null 2>&1; then
               echo "❌ $image_ref not found in registry"
               exit 1
           fi
 
-          # Run Docker Scout CVE scan and append to OUTFILE
+          # Run Docker Scout CVE scan and append to cve-scan.log
           {
             echo "===== Target: ${target_name}  Image: ${image_ref} ====="
             docker scout cves "$image_ref" --details
