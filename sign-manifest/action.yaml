@@ -1,0 +1,119 @@
+# yamllint disable rule:line-length
+---
+name: sign-manifest
+
+description: Sign image manifest using org or team cosign keys
+
+inputs:
+
+  bake-file:
+    description: Name of docker bake json file. Default is docker-bake.json.
+    required: false
+    default: "docker-bake.json"
+
+  release-tag:
+    description: Value for an additional release tag.
+    required: false
+    default: ""
+
+  cosign-sign-key:
+    description: Path to private key used to sign image. Default is ./cosign.key
+    required: false
+    default: cosign.key
+
+  cosign-verify-key:
+    description: Path to public key used to verify signature. Default is ./cosign.pub
+    required: false
+    default: cosign.pub
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Confirm signing parameters are set; key files and COSIGN_PASSWORD env variable
+      shell: bash
+      env:
+        SIGN_KEY: ${{ inputs.cosign-sign-key }}
+        VERIFY_KEY: ${{ inputs.cosign-verify-key }}
+      run: |
+        if [ ! -f "$SIGN_KEY" ]; then
+          echo "signing key not available; not able to sign image."
+          exit 1
+        fi
+
+        if [ ! -f "$VERIFY_KEY" ]; then
+          echo "verification key not available; not able to validate signing process."
+          exit 1
+        fi
+
+        if [ ! $COSIGN_PASSWORD ]; then
+          echo "signing key passphrase is not available; not able to sign image."
+          exit 1
+        fi
+
+    - name: add tag to existing manifest based on docker bake file configuration
+      shell: bash
+      env:
+        BAKE_FILE: ${{ inputs.bake-file }}
+        RELEASE_TAG: ${{ inputs.release-tag }}
+        SIGN_KEY: ${{ inputs.cosign-sign-key }}
+        VERIFY_KEY: ${{ inputs.cosign-verify-key }}
+      run: |
+        #!/bin/bash
+        set -euo pipefail
+
+        echo "Signing released images."
+
+        if [[ ! -f "$BAKE_FILE" ]]; then
+          echo "Bake file not found: $BAKEFILE" >&2
+          exit 1
+        fi
+        [[ -z "$RELEASE_TAG" ]] && RELEASE_TAG="$GITHUB_REF_NAME"
+        eval "RELEASE_TAG=\"$RELEASE_TAG\""
+
+        echo "Using bake file: $BAKEFILE"
+        echo "release tag: $RELEASE_TAG"
+
+        # Extract all targets and their tags
+        jq -r '
+          .target
+          | to_entries[]
+          | select(.value.tags != null)
+          | .key as $name
+          | .value.tags[]
+          | [$name, .]
+          | @tsv
+        ' "$BAKE_FILE" |
+        while IFS=$'\t' read -r target_name raw_tag; do
+          image_ref="$raw_tag"
+
+          # Replace bakefile var reference with actual VAR value.
+          # We define it twice to support both ${RELEASE_TAG} and $RELEASE_TAG
+          image_ref="${image_ref//\$\{TAG\}/$RELEASE_TAG}"
+          image_ref="${image_ref//\$TAG/$RELEASE_TAG}"
+
+          # pick up any other ENV should they exist in the defition (allow more customization)
+          image_ref="$(eval echo "$image_ref")"
+
+          echo "Target: ${target_name}"
+          echo "Source image: ${image_ref}"
+
+        # Obtain manifest index digest
+          digest=$(oras manifest fetch --descriptor "${image_ref}" | jq -r '.digest')
+
+          if [[ -z "$digest" ]]; then
+            echo "❌ Unable to resolve digest for ${image_ref}"
+            exit 1
+          fi
+
+          export COSIGN_EXPERIMENTAL=1
+          echo "Signing digest reference: ${image_ref%@*}@${digest}"
+          # sign image
+          cosign sign --registry-referrers-mode=oci-1-1 --key "${COSIGN_SIGN_KEY}" "${image_ref%@*}@${digest}" -y
+
+          # verify signature
+          cosign verify --key "${COSIGN_VERIFY_KEY}" "${image_ref}@${digest}"
+
+          echo "Release version signed and verified"
+          echo
+        done
