@@ -85,6 +85,8 @@ runs:
           fi
 
           # Run Snyk CVE scan and append to snyk-scan.log
+          echo "snyk api key: ${SNYK_API::5}"
+          echo "snyk org: ${SNYK_ORGANIZATION}"
           snyk config set api=$SNYK_API
           snyk config set org=$SNYK_ORGANIZATION
           snyk -v
