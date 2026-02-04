@@ -1,0 +1,44 @@
+
+
+
+
+
+  sign-image:
+    description: Sign OCI image using cosign. Default is false.
+    required: false
+    default: "false"
+
+  cosign-sign-key:
+    description: Path to private key used to sign image. Default is ./cosign.key
+    required: false
+    default: cosign.key
+
+  cosign-verify-key:
+    description: Path to public key used to verify signature. Default is ./cosign.pub
+    required: false
+    default: cosign.pub
+
+  cosign-password:
+    description: Environment variable containing signing key passphrase. Default is COSIGN_PASSWORD.
+    required: false
+    default: COSIGN_PASSWORD
+
+
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: add tag to existing manifest based on docker bake file configuration
+      shell: bash
+      env:
+        TAG: ${{ inputs.commit-tag }}
+        BAKE_FILE: ${{ inputs.bake-file }}
+        TARGET: ${{ inputs.target }}
+        RELEASE_TAG: ${{ inputs.release-tag }}
+        INCLUDE_LATEST: ${{ inputs.include-latest }}
+        SIGN_IMAGE: ${{ inputs.sign-image }}
+        COSIGN_SIGN_KEY: ${{ inputs.cosign-sign-key }}
+        COSIGN_VERIFY_KEY: ${{ inputs.cosign-verify-key }}
+        COSIGN_PASSWORD: ${{ inputs.cosign-password }}
+      run: |

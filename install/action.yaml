@@ -49,6 +49,11 @@ inputs:
     required: false
     default: ""
 
+  oras-version:
+    description: Install Oras version
+    required: false
+    default: ""
+
 runs:
   using: "composite"
 
@@ -131,3 +136,8 @@ runs:
       uses: bats-core/bats-action@3.0.1
       with:
         bats-version: ${{ inputs.bats-version }}
+
+    - name: install oras
+      uses: oras-project/setup-oras@v1
+      with:
+        version: ${{ inputs.snyk-version }}
