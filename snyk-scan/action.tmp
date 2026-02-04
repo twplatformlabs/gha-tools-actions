@@ -3,8 +3,7 @@
 name: snyk scan
 
 description: |
-  Uses Snyk with a bake file configuration for cve scan.
-  expects SNYK_API, and SNYK_ORGANIZATION
+  Under Development, not yet supported
 
 inputs:
 

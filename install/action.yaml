@@ -3,11 +3,11 @@
 name: install
 
 description: |
-  Install gha common packages.
+  Install gha-tools packages.
 
-  Common packages, like actions, are packages not generally associated
-  with a particular pipeline tech stack. This are likely to be found on
-  any kind of pipeline and base image.
+  These could be already installed on a pre-configured runner used by the
+  shared workflow. Or you may need to install them on the runner,
+  or just need a particular version.
 
   Supported packages:
   - 1Password
@@ -15,8 +15,7 @@ description: |
   - teller
   - Docker Scout
   - snyk
-  - trivy
-  - grype
+  - bats
 
 inputs:
 
@@ -45,13 +44,8 @@ inputs:
     required: false
     default: ""
 
-  trivy-version:
-    description: Install Hadolint version
-    required: false
-    default: ""
-
-  grype-version:
-    description: Install Hadolint version
+  bats-version:
+    description: Install Bats version
     required: false
     default: ""
 
@@ -132,7 +126,8 @@ runs:
       with:
         snyk-version: ${{ inputs.snyk-version }}
 
-    # - name: Install trivy
-    #   if: ${{ inputs.buildevents-version != '' }}
-    #   shell: bash
-    #   run: |
+    - name: Install bats
+      if: ${{ inputs.bats-version != '' }}
+      uses: bats-core/bats-action@3.0.1
+      with:
+        bats-version: ${{ inputs.bats-version }}
