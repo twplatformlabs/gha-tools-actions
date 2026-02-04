@@ -88,7 +88,7 @@ runs:
 
     - name: Install Teller
       if: ${{ inputs.teller-version != '' }}
-      uses: spectralops/setup-teller@v2
+      uses: spectralops/setup-teller-action@v2
       with:
         teller_version: 1.5.6
 
