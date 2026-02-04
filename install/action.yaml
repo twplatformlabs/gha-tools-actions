@@ -132,6 +132,7 @@ runs:
         snyk-version: ${{ inputs.snyk-version }}
 
     - name: Install bats
+      id: setup-bats
       if: ${{ inputs.bats-version != '' }}
       uses: bats-core/bats-action@3.0.1
       with:
