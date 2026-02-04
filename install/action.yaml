@@ -54,6 +54,11 @@ inputs:
     required: false
     default: ""
 
+  cosign-version:
+    description: Install Cosign version
+    required: false
+    default: ""
+
 runs:
   using: "composite"
 
@@ -155,3 +160,9 @@ runs:
       uses: oras-project/setup-oras@v1
       with:
         version: ${{ inputs.oras-version }}
+
+    - name: install cosign
+      if: ${{ inputs.cosign-version != '' }}
+      uses: sigstore/cosign-installer@v4.0.0
+      with:
+        cosign-release: ${{ inputs.cosign-version }}
