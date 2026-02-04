@@ -150,4 +150,4 @@ runs:
     - name: install oras
       uses: oras-project/setup-oras@v1
       with:
-        version: ${{ inputs.snyk-version }}
+        version: ${{ inputs.oras-version }}
