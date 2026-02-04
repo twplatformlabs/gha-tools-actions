@@ -28,7 +28,7 @@ inputs:
   teller-version:
     description: Install Teller version
     required: false
-    default: "1.5.6"
+    default: ""
 
   vault-version:
     description: Install Vault version
@@ -59,6 +59,15 @@ runs:
   using: "composite"
 
   steps:
+    - name: list packages to be installed
+      shell: bash
+      run: |
+        echo "1Password CLI: ${{ inputs.op-version }}"
+        echo "Vault: ${{ inputs.vault-version }}"
+        echo "Teller: ${{ inputs.teller-version }}"
+        echo "Docker Scout: ${{ inputs.scout-version }}"
+        echo "Snyk: ${{ inputs.snyk-version }}"
+
     - name: Install 1Password CLI
       if: ${{ inputs.op-version != '' }}
       uses: 1password/install-cli-action@v2
@@ -77,11 +86,11 @@ runs:
       #   sudo unzip "vault_${{ inputs.vault-version }}_linux_amd64.zip" -d /usr/local/bin
       #   sudo rm "vault_${{ inputs.vault-version }}_linux_amd64.zip"
 
-    # - name: Install Teller
-    #   if: ${{ inputs.teller-version != '' }}
-    #   uses: spectralops/setup-teller@v2
-    #   with:
-    #     teller_version: ${{ inputs.teller-version }}
+    - name: Install Teller
+      if: ${{ inputs.teller-version != '' }}
+      uses: spectralops/setup-teller@v2
+      with:
+        teller_version: 1.5.6
 
       # shell: bash
       # run: |
