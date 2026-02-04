@@ -151,6 +151,7 @@ runs:
         echo "BATS_LIB_PATH=${BATS_LIB_PATH}" >> $GITHUB_ENV
 
     - name: install oras
+      if: ${{ inputs.oras-version != '' }}
       uses: oras-project/setup-oras@v1
       with:
         version: ${{ inputs.oras-version }}
