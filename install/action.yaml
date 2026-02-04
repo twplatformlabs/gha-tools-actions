@@ -137,15 +137,17 @@ runs:
       with:
         bats-version: ${{ inputs.bats-version }}
         support-path: "${{ github.workspace }}/tests/bats-support"
-        assert-path:  "${{ github.workspace }}/tests/bats-assert"
-        detik-path:   "${{ github.workspace }}/tests/bats-detik"
-        file-path:    "${{ github.workspace }}/tests/bats-file"
+        assert-path: "${{ github.workspace }}/tests/bats-assert"
+        detik-path: "${{ github.workspace }}/tests/bats-detik"
+        file-path: "${{ github.workspace }}/tests/bats-file"
 
     - name: set bats lib path
       if: ${{ inputs.bats-version != '' }}
       shell: bash
       run: |
-        echo "BATS_LIB_PATH=${{ steps.setup-bats.outputs.lib-path }}" >> $GITHUB_ENV
+        export BATS_LIB_PATH=${{ steps.setup-bats.outputs.lib-path }}
+        echo "BATS_LIB_PATH=$BATS_LIB_PATH"
+        echo "BATS_LIB_PATH=${BATS_LIB_PATH}" >> $GITHUB_ENV
 
     - name: install oras
       uses: oras-project/setup-oras@v1
