@@ -54,6 +54,9 @@ runs:
           exit 1
         fi
 
+        [[ -z "$TAG" ]] && TAG="dev.${GITHUB_SHA::7}"
+        echo "TAG=$TAG" >> "$GITHUB_ENV"
+
         echo "Using bake file: $BAKE_FILE"
         echo "Using TAG=${TAG}"
 
