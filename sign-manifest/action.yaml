@@ -65,13 +65,13 @@ runs:
         echo "Signing released images."
 
         if [[ ! -f "$BAKE_FILE" ]]; then
-          echo "Bake file not found: $BAKEFILE" >&2
+          echo "Bake file not found: $BAKE_FILE" >&2
           exit 1
         fi
         [[ -z "$RELEASE_TAG" ]] && RELEASE_TAG="$GITHUB_REF_NAME"
         eval "RELEASE_TAG=\"$RELEASE_TAG\""
 
-        echo "Using bake file: $BAKEFILE"
+        echo "Using bake file: $BAKE_FILE"
         echo "release tag: $RELEASE_TAG"
 
         # Extract all targets and their tags
