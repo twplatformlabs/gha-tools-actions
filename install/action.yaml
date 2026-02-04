@@ -117,10 +117,11 @@ runs:
         }
         EOF
 
-    # - name: Install snyk
-    #   if: ${{ inputs.buildevents-version != '' }}
-    #   shell: bash
-    #   run: |
+    - name: Install snyk
+      if: ${{ inputs.snyk-version != '' }}
+      uses: snyk/actions/setup@v1
+      with:
+        snyk-version: ${{ inputs.snyk-version }}
 
     # - name: Install trivy
     #   if: ${{ inputs.buildevents-version != '' }}
