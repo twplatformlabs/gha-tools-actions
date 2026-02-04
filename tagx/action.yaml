@@ -97,7 +97,7 @@ runs:
           echo "Digest reference: ${image_ref%@*}@${digest}"
 
           # optionally add latest tag
-          if [[ "$LATEST_TAG" == "true" ]]; then
+          if [[ "$INCLUDE_LATEST" == "true" ]]; then
             latest_image_ref="${image_ref/$TAG/latest}"
             echo "(Optional) Use Latest: ${latest_image_ref}"
             docker buildx imagetools create -t "${latest_image_ref}" "${image_ref%@*}@${digest}"
