@@ -82,7 +82,7 @@ runs:
 
           # pick up any other ENV should they exist in the defition (allow more customization)
           image_ref="$(eval echo "$image_ref")"
-          
+
           echo "Target: ${target_name}"
           echo "Source image: ${image_ref}"
 

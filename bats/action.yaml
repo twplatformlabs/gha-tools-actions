@@ -69,7 +69,7 @@ runs:
           | .value.tags[]
           | [$name, .]
           | @tsv
-        ' "$BAKE_FILE" | 
+        ' "$BAKE_FILE" |
         while IFS=$'\t' read -r target_name raw_tag; do
           image_ref="$raw_tag"
 
