@@ -151,11 +151,16 @@ runs:
         echo "BATS_LIB_PATH=$BATS_LIB_PATH"
         echo "BATS_LIB_PATH=${BATS_LIB_PATH}" >> $GITHUB_ENV
 
-    - name: install oras
-      if: ${{ inputs.oras-version != '' }}
+    # The oras-project action does not support 'latest'
+    - name: install oras latest
+      if: ${{ inputs.oras-version == 'latest' }}
+      uses: oras-project/setup-oras@v1
+
+    - name: install oras specific version
+      if: ${{ inputs.oras-version != '' && inputs.oras-version != 'latest' }}
       uses: oras-project/setup-oras@v1
       with:
-        version: ${{ inputs.oras-version == 'latest' && format('') || inputs.oras-version }}
+        version: ${{ inputs.oras-version }}
 
     - name: install cosign
       if: ${{ inputs.cosign-version != '' }}
