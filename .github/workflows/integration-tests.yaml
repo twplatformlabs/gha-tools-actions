@@ -1,7 +1,7 @@
 # yamllint disable rule:line-length
 # yamllint disable rule:truthy
 ---
-name: integration tests
+name: gha-tools-actions integration tests
 
 on:
   workflow_call:
@@ -16,8 +16,8 @@ permissions:
 
 jobs:
 
-  integration-tests:
-    name: 1password-action integration tests
+  install-package-tests:
+    name: validate all packages supported by the install action
     runs-on: ubuntu-latest
 
     env:
@@ -27,23 +27,62 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v6
 
-      - name: Install 1Password CLI
-        uses: 1password/install-cli-action@143a85f84a90555d121cde2ff5872e393a47ab9f      # v1.0.0
+      - name: install all packages supported by the install action
+        uses: twplatformlabs/gha-tools-actions/install@main
         with:
-          version: 2.32.0
+          op-version: latest
+          vault-version: latest
+          teller-version: latest
+          scout-version: latest
+          snyk-version: latest
+          bats-version: latest
+          oras-version: latest
+          cosign-version: latest
 
-      - name: Load slack webhook
-        uses: 1password/load-secrets-action@v2.0.0
+      - name: validate installed packages
+        shell: bash
+        run: |
+          op --help | grep "1Password CLI"
+          vault --help | grep "Usage:"
+          teller --help | grep "Usage:"
+          docker scout --help | grep "Command line tool for Docker Scout"
+          snyk --help | grep "Snyk CLI"
+          bats --version | grep "Bats"
+          oras --help | grep "Usage:"
+          cosign --help | grep "Usage:"
+
+
+  integration-tests:
+    name: gha-tools-actions integration tests
+    runs-on: ubuntu-latest
+    container: ghcr.io/twplatformlabs/gha-tools-runner:2026.03
+
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+
+      - name: load job credentials
+        uses: 1password/load-secrets-action@v3
         with:
           export-env: true
         env:
-          SLACK_BOT_TOKEN: op://platform/svc-slack/platform-slack-bot-token
+          GH_TOKEN: op://platform/svc-github/access-token
+          DOCKER_LOGIN: op://platform/svc-github/username
+          DOCKER_PASSWORD: op://platform/svc-github/access-token
 
-      - name: test common-actions/slack-bot
-        uses: twplatformlabs/common-actions/slack-bot@main
+      - name: validate confirm registry action
+        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
         with:
-          channel: lab-events
-          message: integration test of twplatformlabs/common-actions
-          custom-message: ""
-          include-link: "false"
-          include-tag: "false"
+          registry: ghcr.io
+
+      # - name: validate buildx image building action
+      #   uses: twplatformlabs/gha-tools-actions/buildx@main
+
+      # - name: validate bats image testing action
+      #   uses: twplatformlabs/gha-tools-actions/bats@main
+
+      # - name: validate sign-manifest action
+      #   uses: twplatformlabs/gha-tools-actions/sign-manifest@main
