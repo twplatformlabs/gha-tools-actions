@@ -73,13 +73,15 @@ jobs:
           DOCKER_LOGIN: op://platform/svc-github/username
           DOCKER_PASSWORD: op://platform/svc-github/access-token
 
-      - name: validate confirm registry action
-        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
-        with:
-          registry: ghcr.io
+      # - name: validate confirm registry action
+      #   uses: twplatformlabs/gha-tools-actions/confirm-registry@main
+      #   with:
+      #     registry: ghcr.io
 
-      # - name: validate buildx image building action
-      #   uses: twplatformlabs/gha-tools-actions/buildx@main
+      - name: validate buildx image building action
+        uses: twplatformlabs/gha-tools-actions/buildx@main
+        with:
+          bake-file: test/docker-bake.json
 
       # - name: validate bats image testing action
       #   uses: twplatformlabs/gha-tools-actions/bats@main
