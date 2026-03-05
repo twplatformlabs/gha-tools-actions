@@ -86,6 +86,13 @@ jobs:
         uses: twplatformlabs/gha-tools-actions/confirm-registry@main
         with:
           registry: ghcr.io
+      - name: debug
+        shell: bash
+        run: |
+          which docker
+          ls -la $HOME/.docker
+          ls -la $HOME/.docker/cli-plugins
+          cat $HOME/.docker/config.json
 
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
