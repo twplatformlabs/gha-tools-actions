@@ -162,8 +162,13 @@ runs:
       with:
         version: ${{ inputs.oras-version }}
 
+    # The sigstore action does not support 'latest'
     - name: install cosign
-      if: ${{ inputs.cosign-version != '' }}
+      if: ${{ inputs.cosign-version == 'latest'}}
+      uses: sigstore/cosign-installer@v4.0.0
+
+    - name: install cosign
+      if: ${{ inputs.cosign-version != '' && inputs.cosign-version != 'latest'}}
       uses: sigstore/cosign-installer@v4.0.0
       with:
         cosign-release: ${{ inputs.cosign-version }}
