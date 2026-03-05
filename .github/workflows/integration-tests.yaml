@@ -89,7 +89,7 @@ jobs:
       - name: debug
         shell: bash
         run: |
-          which docker
+          cat /etc/image-release
           ls -la $HOME/.docker
           ls -la $HOME/.docker/cli-plugins
           cat $HOME/.docker/config.json
