@@ -3,11 +3,15 @@
 name: install
 
 description: |
-  Install gha-tools packages.
+  Install commonly used packages. These are tools or other packages that can
+  and do appear in most any kind of shared workflow or action. Generally such
+  packages will be avvailable on pre-configured runners, with many being part
+  of the base runner image. But where there is a need to install a particular
+  version, this action can be used.
 
-  These could be already installed on a pre-configured runner used by the
-  shared workflow. Or you may need to install them on the runner,
-  or just need a particular version.
+  For each, include the input parameter with a value equal to the version of
+  the package that you want to be installed. Use 'latest' to install the current
+  release version.
 
   Supported packages:
   - 1Password
@@ -16,16 +20,13 @@ description: |
   - Docker Scout
   - snyk
   - bats
+  - oras
+  - cosign
 
 inputs:
 
   op-version:
-    description: 1password-cli version
-    required: false
-    default: ""
-
-  teller-version:
-    description: Install Teller version
+    description: Install 1password-cli version
     required: false
     default: ""
 
@@ -34,13 +35,18 @@ inputs:
     required: false
     default: ""
 
+  teller-version:
+    description: Install Teller version
+    required: false
+    default: ""
+
   scout-version:
-    description: Install Hadolint version
+    description: Install Docker Scout version
     required: false
     default: ""
 
   snyk-version:
-    description: Install Hadolint version
+    description: Install Snyk version
     required: false
     default: ""
 
@@ -71,6 +77,9 @@ runs:
         echo "Teller: ${{ inputs.teller-version }}"
         echo "Docker Scout: ${{ inputs.scout-version }}"
         echo "Snyk: ${{ inputs.snyk-version }}"
+        echo "Bats: ${{ inputs.bats-version }}"
+        echo "Oras: ${{ inputs.oras-version }}"
+        echo "Cosign: ${{ inputs.cosign-version }}"
 
     - name: Install 1Password CLI
       if: ${{ inputs.op-version != '' }}
@@ -84,24 +93,11 @@ runs:
       with:
         vault_version: ${{ inputs.vault-version }}
 
-      # shell: bash
-      # run: |
-      #   curl -SLO "https://releases.hashicorp.com/vault/${{ inputs.vault-version }}/vault_${{ inputs.vault-version }}_linux_amd64.zip" > "vault_${{ inputs.vault-version }}_linux_amd64.zip"
-      #   sudo unzip "vault_${{ inputs.vault-version }}_linux_amd64.zip" -d /usr/local/bin
-      #   sudo rm "vault_${{ inputs.vault-version }}_linux_amd64.zip"
-
     - name: Install Teller
       if: ${{ inputs.teller-version != '' }}
       uses: spectralops/setup-teller-action@v2
       with:
         teller_version: 1.5.6
-
-      # shell: bash
-      # run: |
-      #   curl -L https://github.com/tellerops/teller/releases/download/v${{ inputs.teller-version }}/teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz --output teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
-      #   tar -xzf teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
-      #   sudo mv teller /usr/local/bin/teller
-      #   rm teller_${{ inputs.teller-version }}_Linux_x86_64.tar.gz
 
     - name: Install scout
       if: ${{ inputs.scout-version != '' }}
