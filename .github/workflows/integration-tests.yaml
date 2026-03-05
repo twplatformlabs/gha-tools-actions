@@ -72,6 +72,15 @@ jobs:
           GH_TOKEN: op://platform/svc-github/access-token
           DOCKER_LOGIN: op://platform/svc-github/username
           DOCKER_PASSWORD: op://platform/svc-github/access-token
+          COSIGN_PASSWORD: op://platform/svc-cosign/passphrase
+
+      - name: Set signing key files for cosign test
+        shell: bash
+        run: |
+          echo "op://platform/svc-cosign-private-key/notesPlain" > cosign.key.tpl
+          echo "op://platform/svc-cosign-public-key/notesPlain" > cosign.pub.tpl
+          op inject -i cosign.key.tpl -o cosign.key
+          op inject -i cosign.pub.tpl -o cosign.pub
 
       - name: validate confirm registry action
         uses: twplatformlabs/gha-tools-actions/confirm-registry@main
@@ -83,8 +92,26 @@ jobs:
         with:
           bake-file: test/docker-bake.json
 
-      # - name: validate bats image testing action
-      #   uses: twplatformlabs/gha-tools-actions/bats@main
+      - name: validate bats image testing action
+        uses: twplatformlabs/gha-tools-actions/bats@main
+        with:
+          bake-file: test/docker-bake.json
+          bats-test-path: test/test.bats
 
-      # - name: validate sign-manifest action
-      #   uses: twplatformlabs/gha-tools-actions/sign-manifest@main
+      - name: validate scout cve scan action
+        uses: twplatformlabs/gha-tools-actions/scout-scan@main
+        with:
+          bake-file: test/docker-bake.json
+
+      - name: validate tagx release action
+        uses: twplatformlabs/gha-tools-actions/tagx@main
+        with:
+          bake-file: test/docker-bake.json
+          release-tag: 0.0.0
+
+      - name: Sign image manifest
+        if: ${{ inputs.sign-manifest != 'false' }}
+        uses: twplatformlabs/gha-tools-actions/sign-manifest@main
+        with:
+          bake-file: test/docker-bake.json
+          release-tag: 0.0.0
