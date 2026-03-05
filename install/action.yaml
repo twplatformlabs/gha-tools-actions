@@ -155,7 +155,7 @@ runs:
       if: ${{ inputs.oras-version != '' }}
       uses: oras-project/setup-oras@v1
       with:
-        version: ${{ inputs.oras-version == 'latest' && '' || inputs.oras-version }}
+        version: ${{ inputs.oras-version == 'latest' && format('') || inputs.oras-version }}
 
     - name: install cosign
       if: ${{ inputs.cosign-version != '' }}
