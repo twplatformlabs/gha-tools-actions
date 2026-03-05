@@ -73,10 +73,10 @@ jobs:
           DOCKER_LOGIN: op://platform/svc-github/username
           DOCKER_PASSWORD: op://platform/svc-github/access-token
 
-      # - name: validate confirm registry action
-      #   uses: twplatformlabs/gha-tools-actions/confirm-registry@main
-      #   with:
-      #     registry: ghcr.io
+      - name: validate confirm registry action
+        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
+        with:
+          registry: ghcr.io
 
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
