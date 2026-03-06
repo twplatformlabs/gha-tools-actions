@@ -1,8 +1,12 @@
 # yamllint disable rule:line-length
 ---
-name: scout scan
+name: scout-scan
 
-description: Uses Docker Scout with a bake file configuration for cve scan.
+description: |
+  Perform Docker Scout CVE scan on image targets defined in bake file. Scan result logs are
+  caputured and uploaded to job artifacts as cve-scan.log file.
+
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -12,12 +16,12 @@ inputs:
     default: "docker-bake.json"
 
   tag:
-    description: value for tag
+    description: Value for development build tag. Default is dev.${GITHUB_SHA:0:7}.
     required: false
     default: ""
 
   target:
-    description: bake file target to build. Default is runner.
+    description: Bake file target to build. Default is runner.
     required: false
     default: "runner"
 
@@ -25,7 +29,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: Docker Scout cve scanbased on docker bake file configuration
+    - name: Docker Scout cve scan based on docker bake file target
       shell: bash
       env:
         TAG: ${{ inputs.tag }}
@@ -95,7 +99,7 @@ runs:
           } >> "cve-scan.log"
         done
 
-    - name: Upload artifact
+    - name: Upload cve-scan.log artifact
       uses: actions/upload-artifact@v4
       with:
         name: cve-scan.log

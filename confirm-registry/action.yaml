@@ -1,8 +1,11 @@
 # yamllint disable rule:line-length
 ---
-name: confirm oci registry
+name: confirm-registry
 
-description: use $DOCKER_LOGIN and $DOCKER_PASSWORD to perform docker login
+description: |
+  Uses environment variables $DOCKER_LOGIN and $DOCKER_PASSWORD to perform oci registry login.
+
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -15,7 +18,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: login to image registry
+    - name: Login to container image registry.
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}

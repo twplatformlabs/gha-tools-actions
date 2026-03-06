@@ -2,7 +2,10 @@
 ---
 name: sign-manifest
 
-description: Sign image manifest using org or team cosign keys
+description: |
+  Sign image manifest based on bake file targets using cosign and cosign generated keys.
+  
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -12,7 +15,7 @@ inputs:
     default: "docker-bake.json"
 
   release-tag:
-    description: Value for an additional release tag.
+    description: Value for release tag. Default is git tag ($GITHUB_REF_NAME).
     required: false
     default: ""
 
@@ -51,7 +54,7 @@ runs:
           exit 1
         fi
 
-    - name: add tag to existing manifest based on docker bake file configuration
+    - name: Add tag to existing manifest based on docker bake file target
       shell: bash
       env:
         BAKE_FILE: ${{ inputs.bake-file }}

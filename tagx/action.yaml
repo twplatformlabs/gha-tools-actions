@@ -2,7 +2,10 @@
 ---
 name: tagx
 
-description: release tag existing manifest
+description: |
+  Tag oci image manifest with a release version, using bake file targets.
+
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -12,22 +15,22 @@ inputs:
     default: "docker-bake.json"
 
   commit-tag:
-    description: value for tag
+    description: Value for development build tag. Default is dev.${GITHUB_SHA:0:7}.
+    required: false
+    default: ""
+
+  release-tag:
+    description: Value for release tag. Default is git tag ($GITHUB_REF_NAME).
     required: false
     default: ""
 
   target:
-    description: bake file target to build. Default is runner.
+    description: Bake file target to build. Default is runner.
     required: false
     default: "runner"
 
-  release-tag:
-    description: Value for an additional release tag.
-    required: false
-    default: ""
-
   include-latest:
-    description: Include latest tag in release. Default is false.
+    description: Include latest tag with release. Default is false.
     required: false
     default: "false"
 
@@ -35,7 +38,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: add tag to existing manifest based on docker bake file configuration
+    - name: Add release tag to oci image manifest based on docker bake file targets
       shell: bash
       env:
         TAG: ${{ inputs.commit-tag }}

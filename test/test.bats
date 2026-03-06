@@ -11,5 +11,5 @@ setup() {
 
 @test "git version" {
   run bash -c "docker exec ${TEST_CONTAINER} git --help"
-  [[ "${output}" =~ "git" ]]
+  [[ "${output}" =~ "usage:" ]]
 }

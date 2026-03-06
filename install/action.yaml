@@ -5,7 +5,7 @@ name: install
 description: |
   Install commonly used packages. These are tools or other packages that can
   and do appear in most any kind of shared workflow or action. Generally such
-  packages will be avvailable on pre-configured runners, with many being part
+  packages will be available on pre-configured runners, with many being part
   of the base runner image. But where there is a need to install a particular
   version, this action can be used.
 
@@ -69,7 +69,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: list packages to be installed
+    - name: List packages to be installed
       shell: bash
       run: |
         echo "1Password CLI: ${{ inputs.op-version }}"
@@ -81,25 +81,25 @@ runs:
         echo "Oras: ${{ inputs.oras-version }}"
         echo "Cosign: ${{ inputs.cosign-version }}"
 
-    - name: Install 1Password CLI
+    - name: Install 1password CLI
       if: ${{ inputs.op-version != '' }}
       uses: 1password/install-cli-action@v2
       with:
         version: ${{ inputs.op-version }}
 
-    - name: Install Vault
+    - name: Install vault
       if: ${{ inputs.vault-version != '' }}
       uses: eLco/setup-vault@v1
       with:
         vault_version: ${{ inputs.vault-version }}
 
-    - name: Install Teller
+    - name: Install teller
       if: ${{ inputs.teller-version != '' }}
       uses: spectralops/setup-teller-action@v2
       with:
         teller_version: 1.5.6
 
-    - name: Install scout
+    - name: Install docker scout
       if: ${{ inputs.scout-version != '' }}
       shell: bash
       env:
@@ -152,11 +152,11 @@ runs:
         echo "BATS_LIB_PATH=${BATS_LIB_PATH}" >> $GITHUB_ENV
 
     # The oras-project action does not support 'latest'
-    - name: install oras latest
+    - name: install oras
       if: ${{ inputs.oras-version == 'latest' }}
       uses: oras-project/setup-oras@v1
 
-    - name: install oras specific version
+    - name: install oras version
       if: ${{ inputs.oras-version != '' && inputs.oras-version != 'latest' }}
       uses: oras-project/setup-oras@v1
       with:
@@ -167,7 +167,7 @@ runs:
       if: ${{ inputs.cosign-version == 'latest'}}
       uses: sigstore/cosign-installer@v4.0.0
 
-    - name: install cosign
+    - name: install cosign version
       if: ${{ inputs.cosign-version != '' && inputs.cosign-version != 'latest'}}
       uses: sigstore/cosign-installer@v4.0.0
       with:

@@ -1,8 +1,22 @@
 # yamllint disable rule:line-length
 ---
-name: bats test
+name: bats
 
-description: Uses Bats with a bake file configuration for runtime configuration testing
+description: |
+  Uses Bats with a bake file configuration for runtime image configuration testing.
+
+  Loops through the targets in the bake file, running each image locally (in build environment) and
+  then executing a specified bats tests, configured to target a running image.
+
+  ex: Has git been successfully installed on the image?
+  ```
+  @test "git version" {
+    run bash -c "docker exec ${TEST_CONTAINER} git --help"
+    [[ "${output}" =~ "usage:" ]]
+  }
+  ```
+
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -12,22 +26,22 @@ inputs:
     default: "docker-bake.json"
 
   tag:
-    description: value for tag
+    description: Value for development build tag. Default is dev.${GITHUB_SHA:0:7}.
     required: false
     default: ""
 
   target:
-    description: bake file target to build. Default is runner.
+    description: Bake file target specifying images to build. Default is runner.
     required: false
     default: "runner"
 
   bats-entry-point:
-    description: Bats entry point
+    description: Bats "docker exec"entry point. Default is /bin/bash.
     required: false
     default: "/bin/bash"
 
   bats-test-path:
-    description: Path to bats test file
+    description: Path to bats test file. Default is pwd.
     required: false
     default: ""
 
@@ -35,7 +49,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: Docker Scout cve scanbased on docker bake file configuration
+    - name: Docker Scout cve scan based on docker bake file targets
       shell: bash
       env:
         TAG: ${{ inputs.tag }}
@@ -47,7 +61,7 @@ runs:
         #!/bin/bash
         set -euo pipefail
 
-        echo "Running bats test against images based on docker-bake file targets."
+        echo "Running bats test against images based on docker bake file targets."
 
         if [[ ! -f "$BAKE_FILE" ]]; then
           echo "Bake file not found: $BAKE_FILE" >&2

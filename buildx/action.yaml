@@ -3,8 +3,10 @@
 name: buildx
 
 description: |
-  Uses buildx with a bake file for advanced builds.
-  Defaults to docker-bake.json, can override.
+  Uses buildx with a bake file for advanced image builds. Build output logs are
+  caputured and uploaded to job artifacts as build.log file.
+
+  See parameter definition below for defaults and customization options.
 
 inputs:
 
@@ -14,9 +16,9 @@ inputs:
     default: "docker-bake.json"
 
   tag:
-    description: value for tag
+    description: Value for development build tag. Default is dev.${GITHUB_SHA:0:7}.
     required: false
-    default: ""     # "dev.${GITHUB_SHA:0:7}"
+    default: ""
 
   target:
     description: bake file target to build. Default is runner.
@@ -24,7 +26,7 @@ inputs:
     default: "runner"
 
   extra-build-args:
-    description: Extra flags to pass to docker build
+    description: Extra flags to pass to docker build.
     required: false
     default: ""
 
@@ -32,7 +34,7 @@ runs:
   using: "composite"
 
   steps:
-    - name: Buildx based on docker bake file configuration
+    - name: Buildx using docker bake file configuration
       shell: bash
       env:
         TAG: ${{ inputs.tag }}
@@ -54,7 +56,7 @@ runs:
           ${EXTRA_BUILD_ARGS} \
           --push -f $BAKE_FILE $TARGET 2>&1 | tee build.log
 
-    - name: Upload artifact
+    - name: Upload build.log artifact
       uses: actions/upload-artifact@v4
       with:
         name: build.log
