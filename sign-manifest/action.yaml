@@ -4,7 +4,7 @@ name: sign-manifest
 
 description: |
   Sign image manifest based on bake file targets using cosign and cosign generated keys.
-  
+
   See parameter definition below for defaults and customization options.
 
 inputs:
