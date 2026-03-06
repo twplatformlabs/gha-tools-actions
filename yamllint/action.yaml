@@ -1,0 +1,9 @@
+
+
+
+file_or_dir: ${{ inputs.yamllint-file-or-dir }}  
+config_file: ${{ inputs.yamllint-config-file }}  -c "$INPUT_CONFIG_FILE"
+config_data: ${{ inputs.yamllint-config-data }}
+format: ${{ inputs.yamllint-format }}
+strict: ${{ inputs.yamllint-strict }}
+no_warnings: ${{ inputs.yamllint-no-warnings }}
