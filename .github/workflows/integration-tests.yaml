@@ -91,6 +91,7 @@ jobs:
         shell: bash
         run: |
           echo $HOME
+          whoami
           cat /etc/image-release
           ls -la $HOME/.docker
           ls -la $HOME/.docker/cli-plugins
