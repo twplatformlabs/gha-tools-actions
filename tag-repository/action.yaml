@@ -1,0 +1,45 @@
+# yamllint disable rule:line-length
+---
+name: tag-repository
+
+description: |
+  Tags custom runner repository to trigger an automated monthly release with current packages.
+
+  See parameter definition below for defaults and customization options.
+
+inputs:
+
+  committer-name:
+    description: Committer name.
+    required: false
+    default: ""
+
+  committer-email:
+    description: Committer email.
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Tag repository with current year and month
+      shell: bash
+      env:
+        COMMITTER_NAME: ${{ inputs.committer-name }}
+        COMMITTER_EMAIL: ${{ inputs.committer-email }}
+      run: |
+        # set committer
+        echo "committer_email: $COMMITTER_EMAIL"
+        echo "committer_email: $COMMITTER_NAME"
+        git config --global user.email "$COMMITTER_EMAIL"
+        git config --global user.name "$COMMITTER_NAME"
+
+        # generate monthly-recurring tag value
+        year=$(date +%Y)
+        month=$(date +%m)
+        tag="${year}.${month}"
+        echo "Generated tag: ${tag}"
+
+        git tag -a "${tag}" -m "Automated tag as job ${GITHUB_JOB:-'unknown'}"
+        git push origin "${tag}"
