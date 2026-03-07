@@ -34,6 +34,7 @@ runs:
         echo "committer_email: $COMMITTER_NAME"
         git config --global user.email "$COMMITTER_EMAIL"
         git config --global user.name "$COMMITTER_NAME"
+        git config --global --add safe.directory $GITHUB_WORKSPACE
 
         # generate monthly-recurring tag value
         year=$(date +%Y)
