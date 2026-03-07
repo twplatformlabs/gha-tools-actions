@@ -46,6 +46,8 @@ runs:
         git config --global user.name "$COMMITTER_NAME"
         git config --global --add safe.directory $GITHUB_WORKSPACE
 
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+
         # generate monthly-recurring tag value
         year=$(date +%Y)
         month=$(date +%m)
