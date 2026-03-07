@@ -67,10 +67,26 @@ jobs:
         with:
           export-env: true
         env:
+          DOCKER_LOGIN: op://platform/svc-dockerhub/username
+          DOCKER_PASSWORD: op://platform/svc-dockerhub/password
+
+      - name: perform dockerhub login
+        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
+
+      - name: load job credentials
+        uses: 1password/load-secrets-action@v3
+        with:
+          export-env: true
+        env:
           GH_TOKEN: op://platform/svc-github/access-token
           DOCKER_LOGIN: op://platform/svc-github/username
           DOCKER_PASSWORD: op://platform/svc-github/access-token
           COSIGN_PASSWORD: op://platform/svc-cosign/passphrase
+
+      - name: perform ghcr login
+        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
+        with:
+          registry: ghcr.io
 
       - name: Set signing key files for cosign test
         shell: bash
@@ -79,19 +95,6 @@ jobs:
           echo "op://platform/svc-cosign-public-key/notesPlain" > cosign.pub.tpl
           op inject -i cosign.key.tpl -o cosign.key
           op inject -i cosign.pub.tpl -o cosign.pub
-
-      - name: validate confirm registry action
-        uses: twplatformlabs/gha-tools-actions/confirm-registry@main
-        with:
-          registry: ghcr.io
-
-      # - name: debug
-      #   shell: bash
-      #   run: |
-      #     cat /etc/image-release
-      #     ls -la $HOME/.docker
-      #     ls -la $HOME/.docker/cli-plugins
-      #     cat $HOME/.docker/config.json
 
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
