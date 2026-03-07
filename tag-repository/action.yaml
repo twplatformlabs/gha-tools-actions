@@ -4,6 +4,7 @@ name: tag-repository
 
 description: |
   Tags custom runner repository to trigger an automated monthly release with current packages.
+  Expects $APP_ID and $PRIVATE_KEY from a dedicated GitHub APP definition to be available in the environment.
 
   See parameter definition below for defaults and customization options.
 
@@ -23,11 +24,20 @@ runs:
   using: "composite"
 
   steps:
+
+    - uses: actions/create-github-app-token@v2
+      id: app-token
+      with:
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+
     - name: Tag repository with current year and month
       shell: bash
       env:
         COMMITTER_NAME: ${{ inputs.committer-name }}
         COMMITTER_EMAIL: ${{ inputs.committer-email }}
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         # set committer
         echo "committer_email: $COMMITTER_EMAIL"
