@@ -18,7 +18,6 @@ description: |
   - vault
   - teller
   - Docker Scout
-  - snyk
   - bats
   - oras
   - cosign
@@ -125,12 +124,6 @@ runs:
           ]
         }
         EOF
-
-    - name: Install snyk
-      if: ${{ inputs.snyk-version != '' }}
-      uses: snyk/actions/setup@v1
-      with:
-        snyk-version: ${{ inputs.snyk-version }}
 
     - name: Install bats
       id: setup-bats
