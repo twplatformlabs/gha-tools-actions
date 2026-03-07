@@ -34,7 +34,6 @@ jobs:
           vault-version: latest
           teller-version: latest
           scout-version: latest
-          snyk-version: latest
           bats-version: latest
           oras-version: latest
           cosign-version: latest
@@ -46,7 +45,6 @@ jobs:
           vault --help | grep "Usage:"
           teller --help | grep "Usage:"
           docker scout --help | grep "Command line tool for Docker Scout"
-          snyk --help | grep "Snyk CLI"
           bats --version | grep "Bats"
           oras --help | grep "Usage:"
           cosign --help | grep "Usage:"
@@ -87,15 +85,13 @@ jobs:
         with:
           registry: ghcr.io
 
-      - name: debug
-        shell: bash
-        run: |
-          echo $HOME
-          whoami
-          cat /etc/image-release
-          ls -la $HOME/.docker
-          ls -la $HOME/.docker/cli-plugins
-          cat $HOME/.docker/config.json
+      # - name: debug
+      #   shell: bash
+      #   run: |
+      #     cat /etc/image-release
+      #     ls -la $HOME/.docker
+      #     ls -la $HOME/.docker/cli-plugins
+      #     cat $HOME/.docker/config.json
 
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
