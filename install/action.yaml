@@ -96,7 +96,7 @@ runs:
       if: ${{ inputs.teller-version != '' }}
       uses: spectralops/setup-teller-action@v2
       with:
-        teller_version: 1.5.6
+        teller-version: 1.5.6
 
     - name: Install docker scout
       if: ${{ inputs.scout-version != '' }}
