@@ -100,7 +100,7 @@ runs:
         done
 
     - name: Upload cve-scan.log artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: cve-scan.log
         path: cve-scan.log
