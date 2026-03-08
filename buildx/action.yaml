@@ -57,7 +57,7 @@ runs:
           --push -f $BAKE_FILE $TARGET 2>&1 | tee build.log
 
     - name: Upload build.log artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: build.log
         path: build.log
