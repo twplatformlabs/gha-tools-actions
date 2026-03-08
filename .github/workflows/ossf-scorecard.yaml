@@ -21,6 +21,7 @@ jobs:
     name: scorecard scan
     uses: twplatformlabs/gha-tools-workflows/.github/workflows/ossf-scorecard-scan.yaml@main
     permissions:
-      contents: read
       security-events: write
       id-token: write
+      contents: read
+      actions: read
