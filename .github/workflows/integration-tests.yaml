@@ -100,7 +100,7 @@ jobs:
         uses: twplatformlabs/gha-tools-actions/hadolint@main
         with:
           bake-file: test/docker-bake.json
-          
+
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
         with:
