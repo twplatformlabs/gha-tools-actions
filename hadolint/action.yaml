@@ -1,0 +1,85 @@
+# yamllint disable rule:line-length
+---
+name: hadolint
+
+description: |
+  Uses Hadolint with a bake file configuration for Dockerfile linting.
+
+  Loops through the targets in the bake file, running a hadolint scan on the
+  target Dockerfile.
+
+  See parameter definition below for defaults and customization options.
+
+inputs:
+
+  bake-file:
+    description: Name of docker bake json file. Default is docker-bake.json.
+    required: false
+    default: "docker-bake.json"
+
+  tag:
+    description: Value for development build tag. Default is dev.${GITHUB_SHA:0:7}.
+    required: false
+    default: ""
+
+  target:
+    description: Bake file target specifying images to build. Default is runner.
+    required: false
+    default: "runner"
+
+  verbose:
+    description: Verbose output. Default is false.
+    required: false
+    default: "false"
+
+  failure-threshold:
+    description: Reporting error level. Default is info (error, warning, style, ignore)
+    required: false
+    default: "info"
+
+  format:
+    description: |
+      Hadolint output format. Default is tty.
+      (tty | json | checkstyle | codeclimate | gitlab_codeclimate |
+      gnu | codacy | sonarqube | sarif)
+    required: false
+    default: "tty"
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Hadolint scan based on docker bake file targets
+      shell: bash
+      env:
+        BAKE_FILE: ${{ inputs.bake-file }}
+        TAG: ${{ inputs.tag }}
+        TARGET: ${{ inputs.target }}
+        VERBOSE: ${{ inputs.verbose }}
+        FAILURE_THRESHOLD: ${{ inputs.failure-threshold }}
+        FORMAT: ${{ inputs.format }}
+      run: |
+        #!/bin/bash
+        set -euo pipefail
+
+        echo "Running hadolint scan against images based on docker bake file targets."
+
+        if [[ ! -f "$BAKE_FILE" ]]; then
+          echo "Bake file not found: $BAKE_FILE" >&2
+          exit 1
+        fi
+        echo "Using bake file: $BAKE_FILE"
+
+        # loop over dockerfile keys
+        jq -r '
+          .target
+          | to_entries[]
+          | select(.value.dockerfile != null)
+          | [.key, .value.dockerfile]
+          | @tsv
+        ' "$BAKE_FILE" |
+        while IFS=$'\t' read -r target_name dockerfile; do
+          echo "===== Dockerfile: ${dockerfile} ====="
+          hadolint --format "${FORMAT}" --failure-threshold "${FAILURE_THRESHOLD}" --verbose "${VERBOSE}" "${dockerfile}"
+          echo
+        done
