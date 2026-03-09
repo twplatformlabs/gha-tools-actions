@@ -27,11 +27,6 @@ inputs:
     required: false
     default: "runner"
 
-  verbose:
-    description: Verbose output. Default is false.
-    required: false
-    default: "false"
-
   failure-threshold:
     description: Reporting error level. Default is info (error, warning, style, ignore)
     required: false
@@ -55,7 +50,6 @@ runs:
         BAKE_FILE: ${{ inputs.bake-file }}
         TAG: ${{ inputs.tag }}
         TARGET: ${{ inputs.target }}
-        VERBOSE: ${{ inputs.verbose }}
         FAILURE_THRESHOLD: ${{ inputs.failure-threshold }}
         FORMAT: ${{ inputs.format }}
       run: |
@@ -69,11 +63,7 @@ runs:
           exit 1
         fi
         echo "Using bake file: $BAKE_FILE"
-        if [[ "$VERBOSE" == "true" ]]; then
-          VERBOSE="--verbose"
-        else
-          VERBOSE=""
-        fi
+
         # loop over dockerfile keys
         jq -r '
           .target
@@ -86,6 +76,6 @@ runs:
           pwd
           ls -la
           echo "===== Dockerfile: ${dockerfile} ====="
-          hadolint --format "${FORMAT}" --failure-threshold "${FAILURE_THRESHOLD}" "${VERBOSE}" "${dockerfile}"
+          hadolint --format "${FORMAT}" --failure-threshold "${FAILURE_THRESHOLD}" "${dockerfile}"
           echo
         done
