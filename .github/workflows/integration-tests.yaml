@@ -96,6 +96,11 @@ jobs:
           op inject -i cosign.key.tpl -o cosign.key
           op inject -i cosign.pub.tpl -o cosign.pub
 
+      - name: validate hadolint action
+        uses: twplatformlabs/gha-tools-actions/hadolint@main
+        with:
+          bake-file: test/docker-bake.json
+          
       - name: validate buildx image building action
         uses: twplatformlabs/gha-tools-actions/buildx@main
         with:
