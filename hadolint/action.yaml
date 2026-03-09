@@ -79,6 +79,8 @@ runs:
           | @tsv
         ' "$BAKE_FILE" |
         while IFS=$'\t' read -r target_name dockerfile; do
+          pwd
+          ls -la
           echo "===== Dockerfile: ${dockerfile} ====="
           hadolint --format "${FORMAT}" --failure-threshold "${FAILURE_THRESHOLD}" --verbose "${VERBOSE}" "${dockerfile}"
           echo
